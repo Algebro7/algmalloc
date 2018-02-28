@@ -69,7 +69,7 @@ struct blockHeader *shrinkBlock(struct blockHeader *blk, size_t totalSize)
 
 void appendNodeToFreeList(struct blockHeader *node)
 {
-    struct blockHeader *freeBlock, *prevBlock; 
+    struct blockHeader *freeBlock; 
 
     if (freeList == NULL) {
         node->prev = NULL;
