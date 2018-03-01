@@ -91,7 +91,7 @@ void prependNodeToFreeList(struct blockHeader *node)
 {
     if (freeList != NULL)
         freeList->prev = node;
-
+        
     node->prev = NULL;
     node->next = freeList;
     freeList = node;
@@ -138,8 +138,8 @@ void *algmalloc(size_t size)
     void *ptr = NULL;
     struct blockHeader *node;
 
-    while (size % 4 != 0)
-        size++;
+    size += 3; 
+    size &=~3;
 
     totalSize = headerSize + size;
     
