@@ -53,7 +53,7 @@ struct blockHeader *shrinkBlock(struct blockHeader *blk, size_t totalSize)
 
     blk->size = totalSize - headerSize;
 
-    blk = (char*)blk + totalSize;
+    blk = (struct blockHeader*)((char*)blk + totalSize);
     blk->size = prevSize - totalSize;
 
     if (prevNode != NULL)

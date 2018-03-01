@@ -23,7 +23,7 @@ void printPointerList(void **ptrArray, size_t length)
         printf("======= Printing Pointer List =======\n");
     }
     for (int i = 0; i < length; i++) {
-        struct blockHeader *metaData = (char*)ptrArray[i] - sizeof(struct blockHeader);
+        struct blockHeader *metaData = (struct blockHeader*)((char*)ptrArray[i] - sizeof(struct blockHeader));
         printf("ptr%d at %p and is size %zu\n", i, ptrArray[i], metaData->size);
     }
 }
