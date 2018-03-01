@@ -138,6 +138,7 @@ void *algmalloc(size_t size)
     void *ptr = NULL;
     struct blockHeader *node;
 
+    // Round size to next multiple of 4
     size += 3; 
     size &=~3;
 
