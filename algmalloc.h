@@ -1,3 +1,6 @@
+#ifndef ALGMALLOC_H
+#define ALGMALLOC_H
+
 #include <unistd.h>
 
 struct blockHeader 
@@ -9,3 +12,5 @@ struct blockHeader
 struct blockHeader *getFreeList();
 void *algmalloc(size_t size);
 void algfree(void *ptr);
+
+#endif

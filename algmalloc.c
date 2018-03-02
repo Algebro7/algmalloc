@@ -1,15 +1,9 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
+#include "algmalloc.h"
 
 #define PAGE_SIZE 4096
-
-struct blockHeader
-{
-    size_t size;
-    struct blockHeader *next;
-    struct blockHeader *prev;
-};
 
 int headerSize = sizeof(struct blockHeader);
 
@@ -166,5 +160,6 @@ void algfree(void *ptr)
     struct blockHeader *node;
 
     node = ptr - headerSize;
-    prependNodeToFreeList(node);
+    //prependNodeToFreeList(node);
+    appendNodeToFreeList(node);
 }
