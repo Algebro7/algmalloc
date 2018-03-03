@@ -91,6 +91,37 @@ void prependNodeToFreeList(struct blockHeader *node)
     freeList = node;
 }
 
+void addNodeToFreeList(struct blockHeader *node)
+{
+    struct blockHeader *curNode;
+    if (freeList == NULL) {
+        freeList = node;
+        node->prev = NULL;
+        node->next = NULL;
+    } else {
+        curNode = freeList;
+        while (curNode->size < node->size && curNode->next != NULL) {
+            curNode = curNode->next;
+        }
+        // Insert before current node
+        if (curNode->size > node->size) {
+            if (curNode->prev != NULL) {
+                curNode->prev->next = node;
+                node->prev = curNode->prev;
+            } else {
+                node->prev = NULL;
+            }
+            curNode->prev = node;
+            node->next = curNode;
+        // Insert after current node (we've reached the end of the list)
+        } else {
+            curNode->next = node;
+            node->prev = curNode;
+            node->next = NULL;
+        }
+    }   
+}
+
 struct blockHeader *searchFreeList(size_t size)
 {
     struct blockHeader *node = freeList;
@@ -121,7 +152,8 @@ void *allocateNewBlock(size_t size)
     
     node = shrinkBlock(newBlock, totalSize);
     
-    appendNodeToFreeList(node);
+    //appendNodeToFreeList(node);
+    addNodeToFreeList(node);
 
     return ptr;
 }
@@ -161,5 +193,6 @@ void algfree(void *ptr)
 
     node = ptr - headerSize;
     //prependNodeToFreeList(node);
-    appendNodeToFreeList(node);
+    //appendNodeToFreeList(node);
+    addNodeToFreeList(node);
 }

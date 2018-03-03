@@ -48,15 +48,21 @@ int main()
     memset(ptrArray[3], 'D', 2048);
 
     algfree(ptrArray[1]);
-    
-    char *ptr = algmalloc(8);
-    ptr[6] = '\n';
-    ptr[7] = '\0';
-    printf("%s", ptr);
     printFreeList();
-    printPointerList(ptrArray, sizeof(ptrArray) / sizeof(ptrArray[0]));
+    //ptrArray[1] = algmalloc(8);
+    // ptrArray[1] = algmalloc(8);
+    // ptrArray[1][6] = '\n';
+    // ptrArray[1][7] = '\0';
+    // printf("%s", ptr);
+    // printFreeList();
+    // printPointerList(ptrArray, sizeof(ptrArray) / sizeof(ptrArray[0]));
 
+    // printFreeList();
+    // //freeAllPointers(ptrArray, sizeof(ptrArray) / sizeof(ptrArray[0]));
+    // //for (int i = 0; i < 4; i++)
+    // //    algfree(ptrArray[i]);
+    // getchar();
 
-    freeAllPointers(ptrArray, sizeof(ptrArray) / sizeof(ptrArray[0]));
+    // printFreeList();
     return 0;
 }
