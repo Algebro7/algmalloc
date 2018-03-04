@@ -1,5 +1,4 @@
-CC=gcc 
-CFLAGS=-Wall -m32
+CFLAGS=-Wall -m32 -ggdb
 LDFLAGS= -Wl,-rpath,'.'
 
 all: algmalloc-test
