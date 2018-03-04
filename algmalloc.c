@@ -1,6 +1,3 @@
-#include <unistd.h>
-#include <stdio.h>
-#include <string.h>
 #include "algmalloc.h"
 
 #define PAGE_SIZE 4096
