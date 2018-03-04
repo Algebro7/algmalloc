@@ -11,36 +11,6 @@ struct blockHeader *getFreeList()
     return freeList;
 }
 
-// void appendNodeToFreeList(struct blockHeader *node)
-// {
-//     struct blockHeader *freeBlock; 
-
-//     if (freeList == NULL) {
-//         node->prev = NULL;
-//         freeList = node;
-//     } else {
-//         freeBlock = freeList;
-//         // Find last node in the free list
-//         while (freeBlock->next != NULL)
-//             freeBlock = freeBlock->next;
-
-//         freeBlock->next = node;
-//         node->prev = freeBlock;
-//     }
-        
-//     node->next = NULL;
-// }
-
-// void prependNodeToFreeList(struct blockHeader *node)
-// {
-//     if (freeList != NULL)
-//         freeList->prev = node;
-        
-//     node->prev = NULL;
-//     node->next = freeList;
-//     freeList = node;
-// }
-
 void addNodeToFreeList(struct blockHeader *node)
 {
     struct blockHeader *curNode;
