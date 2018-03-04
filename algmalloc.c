@@ -76,9 +76,6 @@ struct blockHeader *searchFreeList(size_t size)
 {
     struct blockHeader *node = freeList;
 
-    if (node == NULL) {
-        return NULL;
-    }
     while (node != NULL) {
         if (node->size >= size) {
             break;
