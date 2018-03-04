@@ -126,8 +126,10 @@ struct blockHeader *shrinkBlock(struct blockHeader *block, size_t size)
     newNode = (struct blockHeader*)((char*)block + headerSize + size);
     newNode->size = block->size - headerSize - size;
     block->size = size;
-
-    addNodeToFreeList(newNode);
+    if (newNode->size > 1) {
+        addNodeToFreeList(newNode);
+    }
+    
     return block;
 }
 
