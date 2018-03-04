@@ -76,9 +76,13 @@ struct blockHeader *searchFreeList(size_t size)
 {
     struct blockHeader *node = freeList;
 
+    if (node == NULL) {
+        return NULL;
+    }
     while (node != NULL) {
-        if (node->size >= size)
+        if (node->size >= size) {
             break;
+        }
         node = node->next;
     }
 
@@ -168,21 +172,18 @@ void *allocateNewBlock(size_t size)
 
 void *algmalloc(size_t size)
 {
-    size_t totalSize;
     void *ptr = NULL;
     struct blockHeader *node;
 
     // Round size to next multiple of 4
     size += 3; 
     size &=~3;
-
-    totalSize = headerSize + size;
     
     // If there is no freeList, call sbrk and initialize one
     if (freeList == NULL) {
         ptr = allocateNewBlock(size);
     } else {
-        node = searchFreeList(totalSize);
+        node = searchFreeList(size);
 
         if (node != NULL) {
             node = shrinkBlock(node, size);

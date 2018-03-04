@@ -37,18 +37,24 @@ void freeAllPointers(void **ptrArray, size_t length)
 
 int main()
 {
+    struct blockHeader *blk;
+
     printf("Allocating chunk of size 16...\n");
     char *ptr1 = algmalloc(16);
+    blk = (struct blockHeader*)(ptr1 - 12);
+    printf("ptr1 at %p, size %zu\n", ptr1, blk->size);
     printFreeList();
 
     printf("Allocating chunk of size 32...\n");
     char *ptr2 = algmalloc(32);
-    printf("ptr2 at %p\n", ptr2);
+    blk = (struct blockHeader*)(ptr2 - 12);
+    printf("ptr2 at %p, size %zu\n", ptr2,blk->size);
     printFreeList(); // Bug here...why does a block of size 32 end up on the free list???
 
     printf("Allocating chunk of size 8...\n");
     char *ptr3 = algmalloc(8);
-    printf("ptr3 at %p\n", ptr3);
+    blk = (struct blockHeader*)(ptr3 - 12);
+    printf("ptr3 at %p, size %zu\n", ptr3, blk->size);
     printFreeList();
     return 0;
 }
