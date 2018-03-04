@@ -37,32 +37,18 @@ void freeAllPointers(void **ptrArray, size_t length)
 
 int main()
 {
+    printf("Allocating chunk of size 16...\n");
+    char *ptr1 = algmalloc(16);
     printFreeList();
-    void *ptrArray[] = { algmalloc(16), algmalloc(32), algmalloc(45056), algmalloc(2048) };
+
+    printf("Allocating chunk of size 32...\n");
+    char *ptr2 = algmalloc(32);
+    printf("ptr2 at %p\n", ptr2);
+    printFreeList(); // Bug here...why does a block of size 32 end up on the free list???
+
+    printf("Allocating chunk of size 8...\n");
+    char *ptr3 = algmalloc(8);
+    printf("ptr3 at %p\n", ptr3);
     printFreeList();
-    printPointerList(ptrArray, sizeof(ptrArray) / sizeof(ptrArray[0]));
-    
-    memset(ptrArray[0], 'A', 16);
-    memset(ptrArray[1], 'B', 32);
-    memset(ptrArray[2], 'C', 45056);
-    memset(ptrArray[3], 'D', 2048);
-
-    algfree(ptrArray[1]);
-    printFreeList();
-    //ptrArray[1] = algmalloc(8);
-    // ptrArray[1] = algmalloc(8);
-    // ptrArray[1][6] = '\n';
-    // ptrArray[1][7] = '\0';
-    // printf("%s", ptr);
-    // printFreeList();
-    // printPointerList(ptrArray, sizeof(ptrArray) / sizeof(ptrArray[0]));
-
-    // printFreeList();
-    // //freeAllPointers(ptrArray, sizeof(ptrArray) / sizeof(ptrArray[0]));
-    // //for (int i = 0; i < 4; i++)
-    // //    algfree(ptrArray[i]);
-    // getchar();
-
-    // printFreeList();
     return 0;
 }

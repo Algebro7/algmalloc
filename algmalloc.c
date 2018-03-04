@@ -14,82 +14,35 @@ struct blockHeader *getFreeList()
     return freeList;
 }
 
-size_t findBreakSize(size_t size)
-{
-    int pages;
-    
-    pages = 4;
-    while (PAGE_SIZE * pages <= size)
-        pages += 4;
-    
-    return PAGE_SIZE * pages;
-}
+// void appendNodeToFreeList(struct blockHeader *node)
+// {
+//     struct blockHeader *freeBlock; 
 
-void *incBreak(size_t size)
-{
-    size_t breakSize; 
-    void *ptr = NULL;
+//     if (freeList == NULL) {
+//         node->prev = NULL;
+//         freeList = node;
+//     } else {
+//         freeBlock = freeList;
+//         // Find last node in the free list
+//         while (freeBlock->next != NULL)
+//             freeBlock = freeBlock->next;
 
-    breakSize = findBreakSize(size);
-    ptr = sbrk(breakSize);
-
-    return ptr;
-}
-
-struct blockHeader *shrinkBlock(struct blockHeader *blk, size_t totalSize)
-{
-    size_t prevSize;
-    struct blockHeader *prevNode, *nextNode;
-
-    prevSize = blk->size;
-    prevNode = blk->prev;
-    nextNode = blk->next;
-
-    blk->size = totalSize - headerSize;
-
-    blk = (struct blockHeader*)((char*)blk + totalSize);
-    blk->size = prevSize - totalSize;
-
-    if (prevNode != NULL)
-        prevNode->next = blk;
-    else
-        freeList = blk;
-
-    blk->prev = prevNode;
-    blk->next = nextNode;
-
-    return blk;
-}
-
-void appendNodeToFreeList(struct blockHeader *node)
-{
-    struct blockHeader *freeBlock; 
-
-    if (freeList == NULL) {
-        node->prev = NULL;
-        freeList = node;
-    } else {
-        freeBlock = freeList;
-        // Find last node in the free list
-        while (freeBlock->next != NULL)
-            freeBlock = freeBlock->next;
-
-        freeBlock->next = node;
-        node->prev = freeBlock;
-    }
+//         freeBlock->next = node;
+//         node->prev = freeBlock;
+//     }
         
-    node->next = NULL;
-}
+//     node->next = NULL;
+// }
 
-void prependNodeToFreeList(struct blockHeader *node)
-{
-    if (freeList != NULL)
-        freeList->prev = node;
+// void prependNodeToFreeList(struct blockHeader *node)
+// {
+//     if (freeList != NULL)
+//         freeList->prev = node;
         
-    node->prev = NULL;
-    node->next = freeList;
-    freeList = node;
-}
+//     node->prev = NULL;
+//     node->next = freeList;
+//     freeList = node;
+// }
 
 void addNodeToFreeList(struct blockHeader *node)
 {
@@ -135,26 +88,84 @@ struct blockHeader *searchFreeList(size_t size)
     return node;
 }
 
+size_t findBreakSize(size_t size)
+{
+    int pages;
+    
+    pages = 4;
+    while (PAGE_SIZE * pages <= size)
+        pages += 4;
+    
+    return PAGE_SIZE * pages;
+}
+
+void *incBreak(size_t size)
+{
+    size_t breakSize; 
+    void *ptr = NULL;
+
+    breakSize = findBreakSize(size);
+    ptr = sbrk(breakSize);
+
+    return ptr;
+}
+
+void removeNodeFromFreeList(struct blockHeader *block)
+{
+    if (block->prev != NULL) {
+        if (block->next != NULL) {
+            // Block is in the middle
+            block->prev->next = block->next;
+            block->next->prev = block->prev;
+        } else {
+            // Block is the tail
+            block->prev->next = NULL;
+        }
+    } else {
+        // Block is the head
+        if (block->next != NULL) {
+            block->next->prev = NULL;
+            freeList = block->next;
+        }
+    }
+
+    block->prev = NULL;
+    block->next = NULL;
+}
+
+// Takes an allocated block, resizes it, and returns it. The leftovers are
+// made into a new block and added to the free list
+struct blockHeader *shrinkBlock(struct blockHeader *block, size_t size)
+{
+    struct blockHeader *newNode;
+
+    if (block->next != NULL || block->prev != NULL) {
+        removeNodeFromFreeList(block);
+    }
+
+    newNode = (struct blockHeader*)((char*)block + headerSize + size);
+    newNode->size = block->size - headerSize - size;
+    block->size = size;
+
+    addNodeToFreeList(newNode);
+    return block;
+}
+
 void *allocateNewBlock(size_t size)
 {
     size_t breakSize, totalSize;
     void *ptr = NULL;
-    void *newBreak = NULL;
-    struct blockHeader *newBlock, *node;
+    struct blockHeader *newBlock;
 
     totalSize = size + headerSize;
 
     breakSize = findBreakSize(totalSize);
-    newBreak = incBreak(totalSize);
-    newBlock = newBreak;        
+    newBlock = incBreak(totalSize);     
     newBlock->size = breakSize - headerSize;
+    newBlock->prev = NULL;
+    newBlock->next = NULL;
+    newBlock = shrinkBlock(newBlock, size);
     ptr = (char*)newBlock + headerSize;
-    
-    node = shrinkBlock(newBlock, totalSize);
-    
-    //appendNodeToFreeList(node);
-    addNodeToFreeList(node);
-
     return ptr;
 }
 
@@ -177,8 +188,8 @@ void *algmalloc(size_t size)
         node = searchFreeList(totalSize);
 
         if (node != NULL) {
+            node = shrinkBlock(node, size);
             ptr = (char*)node + headerSize;
-            node = shrinkBlock(node, totalSize);
         } else {
             ptr = allocateNewBlock(size);
         }
@@ -192,7 +203,5 @@ void algfree(void *ptr)
     struct blockHeader *node;
 
     node = ptr - headerSize;
-    //prependNodeToFreeList(node);
-    //appendNodeToFreeList(node);
     addNodeToFreeList(node);
 }
