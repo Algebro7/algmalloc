@@ -110,6 +110,7 @@ void *incBreak(size_t size)
 
 void removeNodeFromFreeList(struct blockHeader *block)
 {
+
     if (block->prev != NULL) {
         if (block->next != NULL) {
             // Block is in the middle
@@ -124,6 +125,9 @@ void removeNodeFromFreeList(struct blockHeader *block)
         if (block->next != NULL) {
             block->next->prev = NULL;
             freeList = block->next;
+        } else {
+            // Free List only contains this block
+            freeList = NULL;
         }
     }
 
@@ -135,9 +139,16 @@ void removeNodeFromFreeList(struct blockHeader *block)
 // made into a new block and added to the free list
 struct blockHeader *shrinkBlock(struct blockHeader *block, size_t size)
 {
-    struct blockHeader *newNode;
+    struct blockHeader *newNode, *curNode;
 
-    if (block->next != NULL || block->prev != NULL) {
+    // if (block->next != NULL || block->prev != NULL) {
+    //     removeNodeFromFreeList(block);
+    // }
+    curNode = freeList;
+    while (curNode != NULL && curNode != block) {
+        curNode = curNode->next;
+    }
+    if (block == curNode) {
         removeNodeFromFreeList(block);
     }
 
