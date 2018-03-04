@@ -33,6 +33,10 @@ void addNodeToFreeList(struct blockHeader *node)
             }
             curNode->prev = node;
             node->next = curNode;
+            // Are we are inserting a new head?
+            if (curNode == freeList) {
+                freeList = node;
+            }
         // Insert after current node (we've reached the end of the list)
         } else {
             curNode->next = node;
