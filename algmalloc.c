@@ -115,9 +115,6 @@ struct blockHeader *shrinkBlock(struct blockHeader *block, size_t size)
 {
     struct blockHeader *newNode, *curNode;
 
-    // if (block->next != NULL || block->prev != NULL) {
-    //     removeNodeFromFreeList(block);
-    // }
     curNode = freeList;
     while (curNode != NULL && curNode != block) {
         curNode = curNode->next;
