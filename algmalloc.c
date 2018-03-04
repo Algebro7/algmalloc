@@ -51,7 +51,7 @@ struct blockHeader *searchFreeList(size_t size)
     struct blockHeader *node = freeList;
 
     while (node != NULL) {
-        if (node->size >= size) {
+        if (node->size >= (size + headerSize)) {
             break;
         }
         node = node->next;
