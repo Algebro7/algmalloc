@@ -56,5 +56,26 @@ int main()
     blk = (struct blockHeader*)(ptr3 - 12);
     printf("ptr3 at %p, size %zu\n", ptr3, blk->size);
     printFreeList();
+
+    printf("Freeing ptr2...\n");
+    algfree(ptr2);
+    printFreeList();
+
+    printf("Allocating chunk of size 16 (should split up the 32 byte chunk on free list)\n");
+    char *ptr4 = algmalloc(16);
+    blk = (struct blockHeader*)(ptr4 - 12);
+    printf("ptr4 at %p, size %zu\n", ptr4, blk->size);
+    printFreeList();
+
+    printf("Freeing ptr3...\n");
+    algfree(ptr3);
+    printFreeList(); 
+
+    printf("Allocating chunk of size 16279...\n");
+    char *ptr5 = algmalloc(16279);
+    blk = (struct blockHeader*)(ptr5 - 12);
+    printf("ptr5 at %p, size %zu\n", ptr5, blk->size);
+    printFreeList();
+
     return 0;
 }
