@@ -51,7 +51,7 @@ struct blockHeader *searchFreeList(size_t size)
     struct blockHeader *node = freeList;
 
     while (node != NULL) {
-        if (node->size >= (size + headerSize)) {
+        if (node->size >= size) {
             break;
         }
         node = node->next;
@@ -164,12 +164,21 @@ void *algmalloc(size_t size)
     if (freeList == NULL) {
         ptr = allocateNewBlock(size);
     } else {
+        // Search the free list for a big enough block to use
         node = searchFreeList(size);
-
         if (node != NULL) {
-            node = shrinkBlock(node, size);
-            ptr = (char*)node + headerSize;
+            if (node->size == size) {
+                ptr = (char*)node + headerSize;
+                removeNodeFromFreeList(node);
+            // Make sure node has enough space to be resized and make room for new block header
+            } else if (node->size >= (size + headerSize)) {
+                node = shrinkBlock(node, size);
+                ptr = (char*)node + headerSize;
+            } else {
+                ptr = allocateNewBlock(size);
+            } 
         } else {
+            // Suitable block wasn't found, allocate a new one
             ptr = allocateNewBlock(size);
         }
     }
